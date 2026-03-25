@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         const { product_id } = req.query;
 
         let query = supabase
-          .from('product_fabrics')
+          .from('fabric_prices')
           .select('id, name, fabric_price, image_url, created_at, product_id, products(name, image_url)')
           .order('name');
 
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         }
 
         const { data, error } = await supabase
-          .from('product_fabrics')
+          .from('fabric_prices')
           .insert({ product_id, name, fabric_price, image_url })
           .select()
           .single();
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
         }
 
         const { data, error } = await supabase
-          .from('product_fabrics')
+          .from('fabric_prices')
           .update(updates)
           .eq('id', id)
           .select()
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
         }
 
         const { error } = await supabase
-          .from('product_fabrics')
+          .from('fabric_prices')
           .delete()
           .eq('id', id);
 
