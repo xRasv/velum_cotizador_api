@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase.js';
  */
 function authenticate(req) {
   const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
-  const expectedKey = process.env.API_KEY || 'development_key';
+  const expectedKey = (process.env.API_KEY || 'development_key').trim();
   const providedKey = apiKey ? apiKey.replace('Bearer ', '') : '';
   return providedKey === expectedKey;
 }
@@ -108,3 +108,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
+

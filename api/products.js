@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
   // Auth check
   const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
-  const expectedKey = process.env.API_KEY || 'development_key';
+  const expectedKey = (process.env.API_KEY || 'development_key').trim();
   const providedKey = apiKey ? apiKey.replace('Bearer ', '') : '';
   if (providedKey !== expectedKey) {
     return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
@@ -38,3 +38,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
+

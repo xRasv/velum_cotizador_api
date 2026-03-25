@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   // Very simple API key security
   const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
   // We check against process.env.API_KEY. For local we can accept anything if API_KEY is missing, but let's be strict.
-  const expectedKey = process.env.API_KEY || 'development_key';
+  const expectedKey = (process.env.API_KEY || 'development_key').trim();
   
   // Remove "Bearer " if someone passes it in Authorization header
   const providedKey = apiKey ? apiKey.replace('Bearer ', '') : '';
@@ -41,3 +41,4 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: error.message || 'Error executing calculation' });
   }
 }
+
