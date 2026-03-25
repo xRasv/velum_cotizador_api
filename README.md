@@ -53,7 +53,7 @@ The body accepts an object defining the dimensions, material, and type of the pr
   "product_type": "tradicional", // "enrollable" | "dia_y_noche" | "tradicional" | "vertical"
   "width": 2.5,
   "height": 2.0,
-  "price": 150, // Unit price. Not needed for "vertical"
+  "fabric_price": 150, // Unit price. Not needed for "vertical"
   "galeria": "RippleFold", // Specific to "tradicional"
   "vertical_type": "Tela", // "PVC" | "Tela" (specific to "vertical")
   "profit": 100, // Optional percentage markup (default 100)
