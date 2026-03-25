@@ -7,12 +7,12 @@
 
 ## ⚡ Overview
 
-The Velum Pricing API is a blazingly fast, standalone service designed to calculate exact product prices based on user dimensions, fabric types, and custom features. Built using pure **Vercel Serverless Functions**, it completely decouples the heavy tabular logic from the frontend bots.
+The Velum Pricing API is a blazingly fast, standalone service designed to calculate exact product prices based on user dimensions, fabric types, and custom features. Built using pure **Vercel Serverless Functions** with a **Supabase** backend, it completely decouples the heavy tabular logic from the frontend bots.
 
 ## 🔐 Authentication
 
-All calculation endpoints are securely locked behind an **API Key**. 
-You must provide your key via the `x-api-key` header, or alternately, as a Bearer token in the `Authorization` header.
+All endpoints are securely locked behind an **API Key**. 
+Provide your key via the `x-api-key` header, or as a Bearer token in `Authorization`.
 
 ```http
 x-api-key: your_super_secret_key
@@ -21,49 +21,50 @@ x-api-key: your_super_secret_key
 ## 🚀 Endpoints
 
 ### 1. **Health Check**
-Verify if the API and Vercel Edge Network are alive and routing correctly.
 
-- **URL:** `/api/ping`
-- **Method:** `GET`
+- **URL:** `GET /api/ping`
 - **Auth Required:** No
 
-**Response:**
 ```json
-{
-  "status": "ok",
-  "time": "2026-03-25T20:15:00.000Z"
-}
+{ "status": "ok", "time": "2026-03-25T20:15:00.000Z" }
 ```
 
 ---
 
 ### 2. **Calculate Price**
-Dynamically calculates the exact tier pricing (Base Cost, Retail without IVA, Retail with IVA) based on the inputs provided.
 
-- **URL:** `/api/calculate`
-- **Method:** `POST`
-- **Auth Required:** Yes (`x-api-key`)
-- **Content-Type:** `application/json`
+- **URL:** `POST /api/calculate`
+- **Auth Required:** Yes
 
-#### **Payload (Body)**
-The body accepts an object defining the dimensions, material, and type of the product.
+#### Payload
 
 ```json
 {
-  "product_type": "tradicional", // "enrollable" | "dia_y_noche" | "tradicional" | "vertical"
+  "product_type": "tradicional",
   "width": 2.5,
   "height": 2.0,
-  "fabric_price": 150, // Unit price. Not needed for "vertical"
-  "galeria": "RippleFold", // Specific to "tradicional"
-  "vertical_type": "Tela", // "PVC" | "Tela" (specific to "vertical")
-  "profit": 100, // Optional percentage markup (default 100)
-  "iva": 12, // Optional tax percentage (default 12)
-  "extras": 0 // Optional flat fee added to base (default 0)
+  "fabric_price": 150,
+  "galeria": "RippleFold",
+  "vertical_type": "Tela",
+  "profit": 100,
+  "iva": 12,
+  "extras": 0
 }
 ```
 
-#### **Success Response (200 OK)**
-Returns the beautifully formatted invoice description alongside the exact pricing variables.
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `product_type` | string | ✅ | `enrollable`, `dia_y_noche`, `tradicional`, `vertical` |
+| `width` | number | ✅ | Meters |
+| `height` | number | ✅ | Meters |
+| `fabric_price` | number | Conditional | Not needed for `vertical` |
+| `galeria` | string | Conditional | Only for `tradicional`: `RippleFold`, `Francesa`, `Ojetes` |
+| `vertical_type` | string | Conditional | Only for `vertical`: `PVC`, `Tela` |
+| `profit` | number | ❌ | Default `100` (%) |
+| `iva` | number | ❌ | Default `12` (%) |
+| `extras` | number | ❌ | Default `0` (Q flat) |
+
+#### Response
 
 ```json
 {
@@ -77,31 +78,46 @@ Returns the beautifully formatted invoice description alongside the exact pricin
 }
 ```
 
-#### **Error Response (400 / 401)**
-If authentication fails or missing properties occur.
+---
 
-```json
-{
-  "error": "Unauthorized: Invalid API key"
-}
-```
+### 3. **List Products**
+
+- **URL:** `GET /api/products`
+- **Auth Required:** Yes
+- **Query Params:** `?include_fabrics=true` to include nested fabric prices.
+
+---
+
+### 4. **Fabric Prices (CRUD)**
+
+- **URL:** `/api/fabric-prices`
+- **Auth Required:** Yes
+
+| Method | Description | Body |
+|---|---|---|
+| `GET` | List all fabric prices | Optional `?product_id=UUID` filter |
+| `POST` | Create a new fabric price | `{ product_id, name, fabric_price, image_url? }` |
+| `PUT` | Update a fabric price | `{ id, ...fieldsToUpdate }` |
+| `DELETE` | Delete a fabric price | `{ id }` |
+
+---
+
+## 🔧 Environment Variables
+
+| Variable | Description |
+|---|---|
+| `API_KEY` | Secret key for endpoint authentication |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side) |
 
 ## 💻 Local Development
 
-To test the formulas without hitting production:
-
-1. Clone the repository natively.
-2. Install the lightweight Vercel CLI: `npm i -g vercel`
-3. Export an API key for your local terminal:
-    - *Windows:* `$env:API_KEY="test"`
-    - *Mac/Linux:* `export API_KEY="test"`
-4. Start the environment:
 ```bash
+git clone https://github.com/xRasv/velum_cotizador_api.git
+npm install
 vercel dev
 ```
 
 ## ☁️ Deployment
 
-This repository is optimized for **Vercel zero-configuration deployments**. 
-
-Simply connect the branch to your Vercel Project and every push to `main` will instantly mirror to the Edge Network within seconds. Make sure to define your `API_KEY` securely in the Vercel Dashboard Settings!
+Zero-config Vercel deployments. Push to `main` and it deploys. Set your environment variables in the Vercel Dashboard!

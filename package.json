@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node api/calculate.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.100.0"
+  },
   "type": "module"
 }
