@@ -1,0 +1,11 @@
+{
+  "name": "velum_cotizador_api",
+  "version": "1.0.0",
+  "description": "API for Velum price calculations",
+  "main": "api/calculate.js",
+  "scripts": {
+    "start": "node api/calculate.js"
+  },
+  "dependencies": {},
+  "type": "module"
+}
